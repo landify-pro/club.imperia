@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ночной клуб ИМПЕРИЯ — Горный Алтай</title>
+<style>
+  :root{
+    --bg:#0a0510;--accent:#ff2e63;--accent2:#7b2ff7;--gold:#f5c518;--text:#f2eaff;--muted:#b9a8d0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+  a{color:inherit;text-decoration:none;}
+  .bg-glow{position:fixed;inset:0;z-index:-2;
+    background:radial-gradient(circle at 20% 20%, rgba(123,47,247,.25), transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(255,46,99,.22), transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(245,197,24,.12), transparent 40%),var(--bg);
+    animation:pulse 12s ease-in-out infinite alternate;}
+  @keyframes pulse{0%{filter:hue-rotate(0deg) brightness(1);}100%{filter:hue-rotate(40deg) brightness(1.15);}}
+  header{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 6%;backdrop-filter:blur(14px);background:rgba(10,5,16,.55);border-bottom:1px solid rgba(255,255,255,.06);}
+  .logo{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:4px;font-size:22px;}
+  .logo .crown{font-size:26px;color:var(--gold);filter:drop-shadow(0 0 8px var(--gold));}
+  .logo span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  nav{display:flex;gap:26px;}
+  nav a{font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;position:relative;padding:4px 0;transition:.3s;}
+  nav a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.3s;}
+  nav a:hover,nav a.active{color:#fff;}
+  nav a:hover::after,nav a.active::after{width:100%;}
+  .burger{display:none;font-size:28px;cursor:pointer;}
+  .page{display:none;min-height:100vh;padding:120px 6% 80px;animation:fade .6s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+  .hero{min-height:calc(100vh - 120px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+  .hero .crown-big{font-size:60px;color:var(--gold);filter:drop-shadow(0 0 20px var(--gold));margin-bottom:10px;}
+  .hero h1{font-size:clamp(52px,13vw,150px);font-weight:900;letter-spacing:8px;line-height:.9;
+    background:linear-gradient(120deg,#fff,var(--accent),var(--accent2),var(--gold));background-size:300% 300%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite;}
+  @keyframes shine{to{background-position:300% center;}}
+  .hero .sub{margin-top:8px;letter-spacing:6px;color:var(--muted);text-transform:uppercase;font-size:14px;}
+  .hero p.lead{max-width:640px;margin:26px auto;color:var(--muted);line-height:1.7;font-size:16px;}
+  .btn{display:inline-block;margin-top:14px;padding:14px 40px;border-radius:40px;font-weight:700;letter-spacing:2px;
+    text-transform:uppercase;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    box-shadow:0 8px 30px rgba(255,46,99,.4);transition:.3s;border:none;color:#fff;}
+  .btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 40px rgba(123,47,247,.6);}
+  .btn.outline{background:transparent;border:1px solid var(--muted);box-shadow:none;margin-left:10px;}
+  .stats{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-top:50px;}
+  .stat{text-align:center;}
+  .stat b{display:block;font-size:40px;font-weight:900;background:linear-gradient(90deg,var(--accent),var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .stat span{color:var(--muted);font-size:13px;letter-spacing:1px;}
+  .section-title{font-size:clamp(34px,6vw,60px);font-weight:900;letter-spacing:3px;margin-bottom:8px;text-transform:uppercase;
+    background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .section-sub{color:var(--muted);margin-bottom:40px;letter-spacing:2px;}
+  .poster-slider{position:relative;display:flex;align-items:center;gap:20px;justify-content:center;}
+  .posters{display:flex;gap:26px;overflow-x:auto;scroll-snap-type:x mandatory;padding:20px 0 30px;scrollbar-width:none;}
+  .posters::-webkit-scrollbar{display:none;}
+  .poster{scroll-snap-align:center;flex:0 0 320px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;transition:.4s;
+    background:linear-gradient(160deg,#1a0d24,#0d0714);border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .poster:hover{transform:translateY(-10px) scale(1.02);border-color:var(--accent);}
+  .poster .img{height:360px;display:flex;align-items:center;justify-content:center;font-size:70px;color:rgba(255,255,255,.15);}
+  .poster .img.g1{background:linear-gradient(135deg,#ff2e63,#7b2ff7);}
+  .poster .img.g2{background:linear-gradient(135deg,#7b2ff7,#00c2ff);}
+  .poster .img.g3{background:linear-gradient(135deg,#f5c518,#ff2e63);}
+  .poster .info{padding:20px;}
+  .poster .date{color:var(--gold);font-weight:700;letter-spacing:1px;font-size:14px;}
+  .poster h3{margin:6px 0;font-size:22px;}
+  .poster p{color:var(--muted);font-size:14px;}
+  .arrow{width:54px;height:54px;border-radius:50%;flex:0 0 auto;cursor:pointer;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:24px;transition:.3s;}
+  .arrow:hover{background:var(--accent);border-color:var(--accent);}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+  .gallery .cell{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;height:240px;display:flex;
+    align-items:center;justify-content:center;font-size:44px;color:rgba(255,255,255,.25);transition:.5s;}
+  .gallery .cell:nth-child(3n+1){background:linear-gradient(135deg,#ff2e63,#7b2ff7);}
+  .gallery .cell:nth-child(3n+2){background:linear-gradient(135deg,#7b2ff7,#00c2ff);}
+  .gallery .cell:nth-child(3n){background:linear-gradient(135deg,#f5c518,#ff2e63);}
+  .gallery .cell.big{grid-column:span 2;}
+  .gallery .cell:hover{transform:scale(.97);filter:brightness(1.2) saturate(1.3);}
+  .gallery .cell .cap{position:absolute;inset:auto 0 0 0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.8));
+    font-size:15px;color:#fff;letter-spacing:1px;transform:translateY(100%);transition:.4s;}
+  .gallery .cell:hover .cap{transform:none;}
+  .modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+    background:rgba(3,0,8,.9);backdrop-filter:blur(10px);}
+  .modal.open{display:flex;animation:fade .3s;}
+  .modal .content{width:min(700px,90%);height:min(70vh,500px);border-radius:24px;display:flex;align-items:center;
+    justify-content:center;font-size:90px;color:rgba(255,255,255,.3);background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 30px 80px rgba(0,0,0,.7);position:relative;animation:zoom .4s;flex-direction:column;}
+  .modal .content .lbl{font-size:22px;letter-spacing:2px;margin-top:14px;color:#fff;}
+  @keyframes zoom{from{transform:scale(.8);opacity:0;}to{transform:none;opacity:1;}}
+  .modal .close{position:absolute;top:-50px;right:0;font-size:36px;cursor:pointer;color:#fff;}
+  .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:20px;}
+  .card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;padding:28px;transition:.3s;}
+  .card:hover{transform:translateY(-6px);border-color:var(--accent);}
+  .card .ico{font-size:34px;margin-bottom:12px;}
+  .card h3{margin-bottom:10px;font-size:20px;}
+  .card p,.card li{color:var(--muted);line-height:1.7;font-size:15px;}
+  .card ul{list-style:none;margin-top:8px;}
+  .card li{padding-left:20px;position:relative;}
+  .card li::before{content:'◆';position:absolute;left:0;color:var(--accent);}
+  .about-text{max-width:800px;color:var(--muted);line-height:1.9;font-size:16px;margin-bottom:40px;}
+  .about-text b{color:var(--gold);}
+  .artists{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;}
+  .artist{padding:8px 18px;border-radius:30px;border:1px solid rgba(255,255,255,.15);font-size:14px;color:var(--muted);transition:.3s;}
+  .artist:hover{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+  footer{text-align:center;padding:40px 6%;color:var(--muted);font-size:13px;letter-spacing:1px;border-top:1px solid rgba(255,255,255,.06);}
+  footer .crown{color:var(--gold);}
+  @media(max-width:768px){
+    nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:rgba(10,5,16,.97);padding:10px 6%;}
+    nav.show{display:flex;}
+    nav a{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+    .burger{display:block;}
+    .gallery .cell.big{grid-column:span 1;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<header>
+  <div class="logo"><span class="crown">♛</span> <span>ИМПЕРИЯ</span></div>
+  <nav id="nav">
+    <a data-page="home" class="active">Главная</a>
+    <a data-page="afisha">Афиша</a>
+    <a data-page="photo">Фотоотчёты</a>
+    <a data-page="info">О клубе</a>
+  </nav>
+  <div class="burger" onclick="document.getElementById('nav').classList.toggle('show')">☰</div>
+</header>
+
+<section class="page active" id="home">
+  <div class="hero">
+    <div class="crown-big">♛</div>
+    <h1>ИМПЕРИЯ</h1>
+    <div class="sub">Главный танцпол Горного Алтая</div>
+    <p class="lead">Там, где сливаются кристально чистые воды Катуни, суровые алтайские горы и вековые кедры — рождается чистая энергия. Твоя любимая музыка, яркие лучи софитов и драйв до рассвета. «Сибирская Ибица» на берегу Катуни, в 500 метрах от озера Ая.</p>
+    <div>
+      <button class="btn" onclick="go('afisha')">Смотреть афишу</button>
+      <button class="btn outline" onclick="go('info')">О клубе</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>40 000+</b><span>ГОСТЕЙ В ГОД</span></div>
+      <div class="stat"><b>14 кВт</b><span>ЗВУКА</span></div>
+      <div class="stat"><b>40 м²</b><span>СВЕТОВОЙ ЭКРАН</span></div>
+      <div class="stat"><b>#1</b><span>ТАНЦПОЛ СИБИРИ</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="afisha">
+  <h2 class="section-title">Афиша</h2>
+  <p class="section-sub">Главные open air события сезона 2026</p>
+  <div class="poster-slider">
+    <div class="arrow" onclick="slide(-1)">‹</div>
+    <div class="posters" id="posters">
+      <div class="poster"><div class="img g1">♫</div><div class="info"><div class="date">06 ИЮНЯ · СБ</div><h3>OPENING PARTY 2026</h3><p>Грандиозное открытие сезона. Специальные гости.</p></div></div>
+      <div class="poster"><div class="img g2">♫</div><div class="info"><div class="date">20 ИЮНЯ · СБ</div><h3>RADIO RECORD NIGHT</h3><p>Резиденты федеральной волны на сцене Империи.</p></div></div>
+      <div class="poster"><div class="img g3">♫</div><div class="info"><div class="date">04 ИЮЛЯ · СБ</div><h3>KATUN OPEN AIR</h3><p>Электронная ночь на берегу под открытым небом.</p></div></div>
+      <div class="poster"><div class="img g1">♫</div><div class="info"><div class="date">18 ИЮЛЯ · СБ</div><h3>DEEP & HOUSE</h3><p>Лучшие сеты сибирских диджеев до рассвета.</p></div></div>
+      <div class="poster"><div class="img g2">♫</div><div class="info"><div class="date">08 АВГ · СБ</div><h3>SUMMER FEST</h3><p>Главный фестиваль лета. Шоу, свет, драйв.</p></div></div>
+      <div class="poster"><div class="img g3">♫</div><div class="info"><div class="date">29 АВГ · СБ</div><h3>CLOSING PARTY</h3><p>Закрытие сезона — финальная вечеринка года.</p></div></div>
+    </div>
+    <div class="arrow" onclick="slide(1)">›</div>
+  </div>
+</section>
+
+<section class="page" id="photo">
+  <h2 class="section-title">Фотоотчёты</h2>
+  <p class="section-sub">Тысячи улыбок, свет и энергия каждой ночи</p>
+  <div class="gallery" id="gallery">
+    <div class="cell big" onclick="openModal('Opening Party 2025')">📸<div class="cap">Opening Party 2025</div></div>
+    <div class="cell" onclick="openModal('Katun Open Air')">📸<div class="cap">Katun Open Air</div></div>
+    <div class="cell" onclick="openModal('VIP Zone')">📸<div class="cap">VIP Zone</div></div>
+    <div class="cell" onclick="openModal('Neon Night')">📸<div class="cap">Neon Night</div></div>
+    <div class="cell big" onclick="openModal('Summer Fest')">📸<div class="cap">Summer Fest</div></div>
+    <div class="cell" onclick="openModal('Главный танцпол')">📸<div class="cap">Главный танцпол</div></div>
+    <div class="cell" onclick="openModal('Лазерное шоу')">📸<div class="cap">Лазерное шоу</div></div>
+    <div class="cell" onclick="openModal('Коктейль-бар')">📸<div class="cap">Коктейль-бар</div></div>
+    <div class="cell big" onclick="openModal('Closing Party')">📸<div class="cap">Closing Party</div></div>
+  </div>
+</section>
+
+<section class="page" id="info">
+  <h2 class="section-title">О клубе</h2>
+  <p class="section-sub">Империя — легенда Горного Алтая</p>
+  <p class="about-text">
+    Каждые выходные «Империя» объединяет несколько тысяч человек, <b>14 киловатт звука</b>, <b>40 квадратных метров</b> светового экрана и потрясающее воображение шоу — так рождается чистая энергия, которую ты можешь почувствовать только здесь.
+    Самую большую танцевальную площадку Сибири под открытым небом качали <b>Moonbeam, DJ Riga, Hard Rock Sofa, Swanky Tunes, Matisse & Sadko</b> и другие звёзды танцевальной сцены.
+  </p>
+  <div class="info-grid">
+    <div class="card"><div class="ico">🍸</div><h3>Бары и коктейли</h3><p>Два больших бара с самыми популярными напитками и авторскими коктейлями поднимут градус твоего настроения.</p></div>
+    <div class="card"><div class="ico">👑</div><h3>VIP-зона</h3><p>Комфортабельная VIP-зона с отдельным баром и индивидуальным подходом к каждому гостю.</p></div>
+    <div class="card"><div class="ico">🍝</div><h3>Ресторан</h3><p>Полноценное меню с блюдами европейской и итальянской кухни в самом сердце танцпола.</p></div>
+    <div class="card"><div class="ico">💨</div><h3>Кальянный бар</h3><p>Уютная мягкая зона кальянного бара — отдых от драйва в лучшей компании.</p></div>
+    <div class="card"><div class="ico">🎛️</div><h3>Сцена и свет</h3><p>Реконструированная сцена с новыми визуальными эффектами и огромным световым экраном.</p></div>
+    <div class="card"><div class="ico">🛋️</div><h3>Посадочные зоны</h3><p>Крытые зоны, столы с мягкими диванами на 4 и 8 человек, бесплатный Wi-Fi.</p></div>
+  </div>
+  <div class="card" style="margin-top:24px;">
+    <div class="ico">📍</div><h3>Как нас найти</h3>
+    <p>Горный Алтай, берег реки Катунь, за старым айским мостом, в 500 метрах от озера Ая.</p>
+    <ul>
+      <li>Работаем в летнем сезоне: июнь — август</li>
+      <li>Основные вечеринки — по выходным до рассвета</li>
+      <li>Бронь VIP и столов — по телефону клуба</li>
+    </ul>
+    <div class="artists">
+      <span class="artist">Moonbeam</span><span class="artist">DJ Riga</span>
+      <span class="artist">Hard Rock Sofa</span><span class="artist">Swanky Tunes</span>
+      <span class="artist">Matisse & Sadko</span><span class="artist">Feel</span>
+      <span class="artist">Alex Menco</span><span class="artist">DJ ЦветкоFF</span>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="modal" onclick="closeModal()">
+  <div class="content" onclick="event.stopPropagation()">📸<div class="lbl" id="modalLbl">Фото</div>
+    <div class="close" onclick="closeModal()">✕</div>
+  </div>
+</div>
+
+<footer>
+  <span class="crown">♛</span> НОЧНОЙ КЛУБ «ИМПЕРИЯ» · ГОРНЫЙ АЛТАЙ · 2026<br>
+  Твоя Империя ждёт тебя этим летом
+</footer>
+
+<script>
+  function go(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===id));
+    document.getElementById('nav').classList.remove('show');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>go(a.dataset.page)));
+  function slide(dir){
+    document.getElementById('posters').scrollBy({left:dir*346,behavior:'smooth'});
+  }
+  function openModal(name){
+    document.getElementById('modalLbl').textContent=name;
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal(){
+    document.getElementById('modal').classList.remove('open');
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>
