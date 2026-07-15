@@ -1,340 +1,145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ночной клуб ИМПЕРИЯ — Горный Алтай</title>
-  <style>
-    :root{--bg:#0a0510;--accent:#ff2e63;--accent2:#7b2ff7;--gold:#f5c518;--text:#f2eaff;--muted:#b9a8d0;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    html{scroll-behavior:smooth;scroll-snap-type:y proximity;}
-    body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
-    a{color:inherit;text-decoration:none;}
-
-    header{
-      position:fixed;top:0;left:0;right:0;z-index:100;
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 6%;
-      backdrop-filter:blur(14px);
-      background:rgba(10,5,16,.55);
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .logo{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:4px;font-size:20px;}
-    .logo .crown{font-size:26px;color:var(--gold);filter:drop-shadow(0 0 8px var(--gold));}
-    .logo span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
-    nav{display:flex;gap:26px;}
-    nav a{font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;position:relative;padding:4px 0;transition:.3s;}
-    nav a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.3s;}
-    nav a:hover,nav a.active{color:#fff;}
-    nav a:hover::after,nav a.active::after{width:100%;}
-    .burger{display:none;font-size:28px;cursor:pointer;}
-
-    section{min-height:100vh;scroll-snap-align:start;padding:100px 6% 60px;position:relative;}
-
-    /* ЭКРАН 1 — ГЛАВНЫЙ */
-    #home{
-      display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
-      background:
-        linear-gradient(rgba(10,5,16,.4),rgba(10,5,16,.85)),
-        radial-gradient(circle at 30% 40%,#3a1a5c,transparent 50%),
-        radial-gradient(circle at 70% 60%,#5c1a35,transparent 50%),
-        #0a0510;
-    }
-    /* Плавающая анимация (используем для логотипа) */
-    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
-
-    /* Логотип на первом экране */
-    .hero-logo{
-      width:clamp(260px,60vw,900px);
-      height:auto;
-      animation:float 4s ease-in-out infinite;
-      filter:drop-shadow(0 0 22px rgba(245,197,24,.22)) drop-shadow(0 12px 30px rgba(0,0,0,.6));
-      user-select:none;-webkit-user-drag:none;pointer-events:none;
-    }
-
-    /* Визуально скрытый заголовок для SEO/доступности */
-    .sr-only{
-      position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
-      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
-    }
-
-    #home .sub{margin-top:14px;letter-spacing:6px;color:#fff;text-transform:uppercase;font-size:14px;text-shadow:0 2px 10px #000;}
-    #home p.lead{max-width:640px;margin:20px auto 26px;color:#e8dcff;line-height:1.7;font-size:16px;text-shadow:0 2px 12px #000;}
-    .btn{
-      display:inline-block;margin:8px;padding:14px 40px;border-radius:40px;font-weight:700;letter-spacing:2px;
-      text-transform:uppercase;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent2));
-      box-shadow:0 8px 30px rgba(255,46,99,.4);transition:.3s;border:none;color:#fff;
-    }
-    .btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 40px rgba(123,47,247,.6);}
-    .btn.outline{background:rgba(0,0,0,.3);border:1px solid #fff;box-shadow:none;}
-    .stats{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-top:24px;}
-    .stat b{
-      display:block;font-size:38px;font-weight:900;
-      background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;
-    }
-    .stat span{color:#e8dcff;font-size:13px;letter-spacing:1px;text-shadow:0 2px 8px #000;}
-    .scroll-hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:12px;letter-spacing:2px;animation:float 2s infinite;}
-
-    .section-title{
-      font-size:clamp(34px,6vw,60px);font-weight:900;letter-spacing:3px;margin-bottom:8px;text-transform:uppercase;
-      background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;
-    }
-    .section-sub{color:var(--muted);margin-bottom:40px;letter-spacing:2px;}
-
-    /* ЭКРАН 2 — АФИША */
-    #afisha{background:radial-gradient(circle at 70% 30%,rgba(123,47,247,.2),transparent 50%),var(--bg);}
-    .poster-slider{position:relative;display:flex;align-items:center;gap:16px;}
-    .posters{display:flex;gap:26px;overflow-x:auto;scroll-snap-type:x mandatory;padding:20px 0 30px;scrollbar-width:none;flex:1;}
-    .posters::-webkit-scrollbar{display:none;}
-    .poster{
-      scroll-snap-align:center;flex:0 0 320px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;transition:.4s;
-      background:linear-gradient(160deg,#1a0d24,#0d0714);border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 50px rgba(0,0,0,.5);
-    }
-    .poster:hover{transform:translateY(-10px) scale(1.02);border-color:var(--accent);}
-    .poster .img{height:380px;display:flex;align-items:center;justify-content:center;font-size:70px;color:rgba(255,255,255,.2);}
-    .poster .img.g1{background:linear-gradient(135deg,#ff2e63,#7b2ff7);}
-    .poster .img.g2{background:linear-gradient(135deg,#7b2ff7,#00c2ff);}
-    .poster .img.g3{background:linear-gradient(135deg,#f5c518,#ff2e63);}
-    .poster .info{padding:20px;}
-    .poster .date{color:var(--gold);font-weight:700;letter-spacing:1px;font-size:14px;}
-    .poster h3{margin:6px 0;font-size:22px;}
-    .poster p{color:var(--muted);font-size:14px;}
-    .arrow{
-      width:54px;height:54px;border-radius:50%;flex:0 0 auto;cursor:pointer;background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:24px;transition:.3s;
-    }
-    .arrow:hover{background:var(--accent);border-color:var(--accent);}
-
-    /* ЭКРАН 3 — ФОТООТЧЁТЫ */
-    #photo{background:radial-gradient(circle at 30% 70%,rgba(255,46,99,.18),transparent 50%),var(--bg);}
-    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
-    .gallery .cell{
-      position:relative;border-radius:16px;overflow:hidden;cursor:pointer;height:260px;display:flex;
-      align-items:center;justify-content:center;font-size:44px;color:rgba(255,255,255,.25);transition:.5s;
-    }
-    .gallery .cell:nth-child(3n+1){background:linear-gradient(135deg,#ff2e63,#7b2ff7);}
-    .gallery .cell:nth-child(3n+2){background:linear-gradient(135deg,#7b2ff7,#00c2ff);}
-    .gallery .cell:nth-child(3n){background:linear-gradient(135deg,#f5c518,#ff2e63);}
-    .gallery .cell.big{grid-column:span 2;}
-    .gallery .cell:hover{transform:scale(.97);filter:brightness(1.2) saturate(1.3);}
-    .gallery .cell .cap{
-      position:absolute;inset:auto 0 0 0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.85));
-      font-size:15px;color:#fff;letter-spacing:1px;transform:translateY(100%);transition:.4s;
-    }
-    .gallery .cell:hover .cap{transform:none;}
-
-    .modal{
-      position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
-      background:rgba(3,0,8,.92);backdrop-filter:blur(10px);
-    }
-    .modal.open{display:flex;}
-    .modal .content{
-      width:min(700px,90%);height:min(70vh,500px);border-radius:20px;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;font-size:90px;color:rgba(255,255,255,.3);
-      background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 30px 80px rgba(0,0,0,.7);animation:zoom .4s;
-    }
-    .modal .content .lbl{font-size:22px;letter-spacing:2px;margin-top:14px;color:#fff;}
-    @keyframes zoom{from{transform:scale(.8);opacity:0;}to{transform:none;opacity:1;}}
-    .modal .close{position:absolute;top:20px;right:30px;font-size:40px;cursor:pointer;color:#fff;}
-
-    /* ЭКРАН 4 — О КЛУБЕ */
-    #info{background:var(--bg);}
-    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:20px;}
-    .card{
-      background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:28px;transition:.3s;
-    }
-    .card:hover{transform:translateY(-6px);border-color:var(--accent);}
-    .card .ico{font-size:34px;margin-bottom:12px;}
-    .card h3{margin-bottom:10px;font-size:20px;}
-    .card p,.card li{color:var(--muted);line-height:1.7;font-size:15px;}
-    .card ul{list-style:none;margin-top:8px;}
-    .card li{padding-left:20px;position:relative;}
-    .card li::before{content:'◆';position:absolute;left:0;color:var(--accent);}
-    .about-text{max-width:800px;color:var(--muted);line-height:1.9;font-size:16px;margin-bottom:40px;}
-    .about-text b{color:var(--gold);}
-    .artists{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;}
-    .artist{padding:8px 18px;border-radius:30px;border:1px solid rgba(255,255,255,.15);font-size:14px;color:var(--muted);transition:.3s;}
-    .artist:hover{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
-    footer{text-align:center;padding:40px 6%;color:var(--muted);font-size:13px;letter-spacing:1px;border-top:1px solid rgba(255,255,255,.06);}
-    footer .crown{color:var(--gold);}
-
-    @media(max-width:768px){
-      nav{
-        display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;
-        background:rgba(10,5,16,.97);padding:10px 6%;
-      }
-      nav.show{display:flex;}
-      nav a{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05);}
-      .burger{display:block;}
-      .gallery .cell.big{grid-column:span 1;}
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05050b">
+  <title>Ночной клуб Империя - Горный Алтай</title>
+  <meta name="description" content="Главный танцпол Горного Алтая. Сибирская Ибица на берегу Катуни.">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<header>
-  <div class="logo"><span class="crown">♛</span> <span>ИМПЕРИЯ</span></div>
-  <nav id="nav">
-    <a href="#home" class="active">Главная</a>
-    <a href="#afisha">Афиша</a>
-    <a href="#photo">Фотоотчёты</a>
-    <a href="#info">О клубе</a>
-  </nav>
-  <div class="burger" onclick="document.getElementById('nav').classList.toggle('show')">☰</div>
-</header>
+  <main>
+    <section class="hero screen" id="home" aria-labelledby="hero-title">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="topo topo-left" aria-hidden="true"></div>
+      <div class="topo topo-right" aria-hidden="true"></div>
 
-<!-- ===== ЭКРАН 1: ГЛАВНЫЙ (с логотипом вместо короны и текста) ===== -->
-<section id="home">
-  <picture>
-    <img src="imperia-logo.png" alt="Ночной клуб ИМПЕРИЯ" class="hero-logo">
-  </picture>
-  <h1 class="sr-only">Ночной клуб ИМПЕРИЯ</h1>
+      <header class="site-header shell">
+        <a class="brand" href="#home" aria-label="Ночной клуб Империя - на главную">
+          <img src="./assets/imperia-logo.png" alt="Ночной клуб Империя">
+        </a>
 
-  <div class="sub">Главный танцпол Горного Алтая</div>
-  <p class="lead">Там, где сливаются кристально чистые воды Катуни, суровые алтайские горы и вековые кедры — рождается чистая энергия. Твоя любимая музыка, яркие лучи софитов и драйв до рассвета. «Сибирская Ибица» на берегу Катуни, в 500 метрах от озера Ая.</p>
-  <div>
-    <a href="#afisha" class="btn">Смотреть афишу</a>
-    <a href="#info" class="btn outline">О клубе</a>
-  </div>
-  <div class="stats">
-    <div class="stat"><b>40 000+</b><span>ГОСТЕЙ В ГОД</span></div>
-    <div class="stat"><b>26 кВт</b><span>ЗВУКА</span></div>
-    <div class="stat"><b>40 м²</b><span>СВЕТОВОЙ ЭКРАН</span></div>
-    <div class="stat"><b>#1</b><span>ТАНЦПОЛ СИБИРИ</span></div>
-  </div>
-  <div class="scroll-hint">▼ ЛИСТАЙ ВНИЗ</div>
-</section>
+        <nav class="desktop-nav" aria-label="Основная навигация">
+          <a href="#events">Афиша</a><span>/</span>
+          <a href="#about">О клубе</a><span>/</span>
+          <a href="#contacts">Контакты</a>
+        </nav>
 
-<!-- ===== ЭКРАН 2: АФИША ===== -->
-<section id="afisha">
-  <h2 class="section-title">Афиша</h2>
-  <p class="section-sub">Главные open air события сезона 2026</p>
-  <div class="poster-slider">
-    <div class="arrow" onclick="slide(-1)">‹</div>
-    <div class="posters" id="posters">
-      <div class="poster" onclick="openModal('Opening Party 2026')">
-        <div class="img g1">♫</div>
-        <div class="info"><div class="date">06 ИЮНЯ · СБ</div><h3>OPENING PARTY 2026</h3><p>Грандиозное открытие сезона. Специальные гости.</p></div>
+        <a class="line-button booking-top" href="tel:+79139976085">
+          <span>Бронирование стола</span><span aria-hidden="true">→</span>
+        </a>
+
+        <details class="mobile-menu">
+          <summary aria-label="Открыть меню"><span></span><span></span></summary>
+          <nav aria-label="Мобильная навигация">
+            <a href="#events">Афиша</a>
+            <a href="#about">О клубе</a>
+            <a href="#contacts">Контакты</a>
+            <a href="tel:+79139976085">Бронирование стола</a>
+          </nav>
+        </details>
+      </header>
+
+      <div class="hero-content shell">
+        <h1 id="hero-title"><img src="./assets/hero-title.png" alt="Ночной клуб Империя"></h1>
+        <p class="hero-copy">Главный танцпол Горного Алтая<br>Сибирская Ибица на берегу Катуни</p>
+        <div class="hero-actions">
+          <a class="primary-cta" href="#events"><span>Смотреть афишу</span><span aria-hidden="true">→</span></a>
+          <a class="line-button ticket-cta" href="#events"><span>Купить билет</span><span aria-hidden="true">→</span></a>
+        </div>
       </div>
-      <div class="poster" onclick="openModal('Radio Record Night')">
-        <div class="img g2">♫</div>
-        <div class="info"><div class="date">20 ИЮНЯ · СБ</div><h3>RADIO RECORD NIGHT</h3><p>Резиденты федеральной волны на сцене Империи.</p></div>
+
+      <div class="stats" aria-label="Показатели клуба">
+        <div class="stats-inner shell">
+          <article class="stat">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24"></circle><circle cx="32" cy="32" r="15"></circle><circle cx="32" cy="32" r="6"></circle><path d="M32 2v9M32 53v9M2 32h9M53 32h9"></path></svg>
+            <div><b>40 000+</b><span>гостей в год</span></div>
+          </article>
+          <article class="stat">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 32h4m4 0h3m4-9v18m5-28v38m6-29v20m6-34v48m6-36v24m6-15v6m6-11v22"></path></svg>
+            <div><b>26 кВт</b><span>звука</span></div>
+          </article>
+          <article class="stat">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="10" width="44" height="44" rx="2"></rect><path d="M18 10v44M46 10v44M10 20h44M10 44h44"></path></svg>
+            <div><b>40 м²</b><span>экран</span></div>
+          </article>
+        </div>
       </div>
-      <div class="poster" onclick="openModal('Katun Open Air')">
-        <div class="img g3">♫</div>
-        <div class="info"><div class="date">04 ИЮЛЯ · СБ</div><h3>KATUN OPEN AIR</h3><p>Электронная ночь на берегу под открытым небом.</p></div>
+    </section>
+
+    <section class="events screen section-shell" id="events" aria-labelledby="events-title">
+      <div class="section-glow section-glow-violet" aria-hidden="true"></div>
+      <div class="section-heading shell">
+        <div><p class="section-kicker">Лето 2026 · Горный Алтай</p><h2 id="events-title">Афиша сезона</h2></div>
+        <p class="section-lead">Громкие артисты, клубные шоу и ночи под открытым небом на берегу Катуни.</p>
       </div>
-      <div class="poster" onclick="openModal('Deep & House')">
-        <div class="img g1">♫</div>
-        <div class="info"><div class="date">18 ИЮЛЯ · СБ</div><h3>DEEP & HOUSE</h3><p>Лучшие сеты сибирских диджеев до рассвета.</p></div>
+
+      <div class="events-rail shell">
+        <article class="event-card">
+          <span class="event-number">01</span>
+          <div class="event-poster"><img src="./assets/poster-legends.jpeg" alt="Афиша: Легендарные нулевые"></div>
+          <div class="event-meta"><div class="event-date"><b>26 июня &amp; 31 июля</b><span>OPEN AIR</span></div><div class="event-copy"><h3>ЛЕГЕНДАРНЫЕ НУЛЕВЫЕ</h3><p>Клубная музыка 2004-2012 годов</p></div></div>
+          <a href="https://reviva-events.ru" target="_blank" rel="noreferrer"><span>Купить билет</span><span aria-hidden="true">→</span></a>
+        </article>
+        <article class="event-card">
+          <span class="event-number">02</span>
+          <div class="event-poster"><img src="./assets/poster-konkretika.jpeg" alt="Афиша: KONKRETIKA"></div>
+          <div class="event-meta"><div class="event-date"><b>18.07</b><span>OPEN AIR</span></div><div class="event-copy"><h3>KONKRETIKA</h3><p>9 Грамм · TRUEтень · Словетский · Местный · 4К · Восточный округ · Toto · Красное дерево</p></div></div>
+          <a href="https://konkretika.site" target="_blank" rel="noreferrer"><span>Купить билет</span><span aria-hidden="true">→</span></a>
+        </article>
+        <article class="event-card">
+          <span class="event-number">03</span>
+          <div class="event-poster"><img src="./assets/poster-record.jpeg" alt="Афиша: МС Жан и DJ Врунгель"></div>
+          <div class="event-meta"><div class="event-date"><b>10 июля</b><span>22:00</span></div><div class="event-copy"><h3>МС ЖАН · DJ ВРУНГЕЛЬ</h3><p>Специальные гости · Алтайский движ</p></div></div>
+          <a href="tel:+79139976085"><span>Забронировать</span><span aria-hidden="true">→</span></a>
+        </article>
+        <article class="event-card">
+          <span class="event-number">04</span>
+          <div class="event-poster"><img src="./assets/poster-ivan.jpeg" alt="Афиша: Ivan Valeev"></div>
+          <div class="event-meta"><div class="event-date"><b>03 июля</b><span>22:00</span></div><div class="event-copy"><h3>IVAN VALEEV</h3><p>Клаб шоу Иван Валеев · «Новелла»</p></div></div>
+          <a href="tel:+79139976085"><span>Забронировать</span><span aria-hidden="true">→</span></a>
+        </article>
       </div>
-      <div class="poster" onclick="openModal('Summer Fest')">
-        <div class="img g2">♫</div>
-        <div class="info"><div class="date">08 АВГ · СБ</div><h3>SUMMER FEST</h3><p>Главный фестиваль лета. Шоу, свет, драйв.</p></div>
+
+      <div class="rail-hint shell" aria-hidden="true"><span>Листай афишу</span><i></i></div>
+    </section>
+
+    <section class="about screen section-shell" id="about" aria-labelledby="about-title">
+      <div class="section-glow section-glow-orange" aria-hidden="true"></div>
+      <div class="about-grid shell">
+        <div class="about-copy">
+          <p class="section-kicker">Атмосфера Империи</p>
+          <h2 id="about-title">Ночь, которую запомнят</h2>
+          <p>Империя - ночной клуб под открытым небом в самом сердце Горного Алтая. Большая сцена, мощный звук, световое шоу и Катунь в нескольких шагах от танцпола.</p>
+          <div class="about-facts"><span>До 1500 гостей</span><span>Сцена у Катуни</span><span>18+</span></div>
+          <div class="report-links" aria-label="Фотоотчёты">
+            <a href="https://cloud.mail.ru/public/N39q/NbsGVE8y8" target="_blank" rel="noreferrer">Фотоотчёт 01<span aria-hidden="true">→</span></a>
+            <a href="https://cloud.mail.ru/public/VE1d/F46BA7Vn3" target="_blank" rel="noreferrer">Фотоотчёт 02<span aria-hidden="true">→</span></a>
+            <a href="https://cloud.mail.ru/public/t7Vg/DNM9Vgnu3" target="_blank" rel="noreferrer">Фотоотчёт 03<span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <div class="photo-collage" aria-label="Фотографии из клуба">
+          <figure class="photo-main"><img src="./assets/report-4.jpg" alt="DJ за пультом в клубе Империя"></figure>
+          <figure class="photo-small photo-top"><img src="./assets/report-1.jpg" alt="Гости танцуют в клубе Империя"></figure>
+          <figure class="photo-small photo-bottom"><img src="./assets/report-3.jpg" alt="Гости клуба Империя"></figure>
+        </div>
       </div>
-      <div class="poster" onclick="openModal('Closing Party')">
-        <div class="img g3">♫</div>
-        <div class="info"><div class="date">29 АВГ · СБ</div><h3>CLOSING PARTY</h3><p>Закрытие сезона — финальная вечеринка года.</p></div>
+
+      <div class="contact-bar shell" id="contacts">
+        <div class="contact-location"><span>Где мы</span><strong>Республика Алтай, с. Ая<br>Берег Катуни</strong></div>
+        <div class="contact-phone"><span>Info / reserve</span><a href="tel:+79139976085">+7 (913) 997-60-85</a></div>
+        <a class="primary-cta contact-cta" href="tel:+79139976085"><span>Забронировать стол</span><span aria-hidden="true">→</span></a>
       </div>
-    </div>
-    <div class="arrow" onclick="slide(1)">›</div>
-  </div>
-</section>
 
-<!-- ===== ЭКРАН 3: ФОТООТЧЁТЫ ===== -->
-<section id="photo">
-  <h2 class="section-title">Фотоотчёты</h2>
-  <p class="section-sub">Тысячи улыбок, свет и энергия каждой ночи</p>
-  <div class="gallery" id="gallery">
-    <div class="cell big" onclick="openModal('Opening Party')">📸<div class="cap">Opening Party</div></div>
-    <div class="cell" onclick="openModal('Katun Open Air')">📸<div class="cap">Katun Open Air</div></div>
-    <div class="cell" onclick="openModal('VIP Zone')">📸<div class="cap">VIP Zone</div></div>
-    <div class="cell" onclick="openModal('Neon Night')">📸<div class="cap">Neon Night</div></div>
-    <div class="cell big" onclick="openModal('Summer Fest')">📸<div class="cap">Summer Fest</div></div>
-    <div class="cell" onclick="openModal('Главный танцпол')">📸<div class="cap">Главный танцпол</div></div>
-    <div class="cell" onclick="openModal('Лазерное шоу')">📸<div class="cap">Лазерное шоу</div></div>
-    <div class="cell" onclick="openModal('Коктейль-бар')">📸<div class="cap">Коктейль-бар</div></div>
-    <div class="cell big" onclick="openModal('Closing Party')">📸<div class="cap">Closing Party</div></div>
-  </div>
-</section>
-
-<!-- ===== ЭКРАН 4: О КЛУБЕ ===== -->
-<section id="info">
-  <h2 class="section-title">О клубе</h2>
-  <p class="section-sub">Империя — легенда Горного Алтая</p>
-  <p class="about-text">
-    Каждые выходные «Империя» объединяет несколько тысяч человек, <b>26 киловатт звука</b>, <b>40 квадратных метров</b> светового экрана и потрясающее воображение шоу — так рождается чистая энергия, которую ты можешь почувствовать только здесь.
-    Самую большую танцевальную площадку Сибири под открытым небом качали <b>Moonbeam, DJ Riga, Hard Rock Sofa, Swanky Tunes, Matisse & Sadko</b> и другие звёзды танцевальной сцены.
-  </p>
-  <div class="info-grid">
-    <div class="card"><div class="ico">🍸</div><h3>Бары и коктейли</h3><p>Два больших бара с самыми популярными напитками и авторскими коктейлями поднимут градус твоего настроения.</p></div>
-    <div class="card"><div class="ico">👑</div><h3>VIP-зона</h3><p>Комфортабельная VIP-зона с отдельным баром и индивидуальным подходом к каждому гостю.</p></div>
-    <div class="card"><div class="ico">🍝</div><h3>Ресторан</h3><p>Полноценное меню с блюдами европейской и итальянской кухни в самом сердце танцпола.</p></div>
-    <div class="card"><div class="ico">💨</div><h3>Кальянный бар</h3><p>Уютная мягкая зона кальянного бара — отдых от драйва в лучшей компании.</p></div>
-    <div class="card"><div class="ico">🎛️</div><h3>Сцена и свет</h3><p>Сцена с визуальными эффектами и огромным световым экраном 40 м².</p></div>
-    <div class="card"><div class="ico">🛋️</div><h3>Посадочные зоны</h3><p>Крытые зоны, столы с мягкими диванами на 4 и 8 человек, бесплатный Wi‑Fi.</p></div>
-  </div>
-  <div class="card" style="margin-top:24px;">
-    <div class="ico">📍</div><h3>Как нас найти</h3>
-    <p>Горный Алтай, берег реки Катунь, за старым айским мостом, в 500 метрах от озера Ая.</p>
-    <ul>
-      <li>Работаем в летнем сезоне: июнь — август</li>
-      <li>Основные вечеринки — по выходным до рассвета</li>
-      <li>Бронь VIP и столов — по телефону клуба</li>
-    </ul>
-    <div class="artists">
-      <span class="artist">Moonbeam</span><span class="artist">DJ Riga</span>
-      <span class="artist">Hard Rock Sofa</span><span class="artist">Swanky Tunes</span>
-      <span class="artist">Matisse & Sadko</span><span class="artist">Feel</span>
-      <span class="artist">Alex Menco</span><span class="artist">DJ ЦветкоFF</span>
-    </div>
-  </div>
-</section>
-
-<!-- Модальное окно -->
-<div class="modal" id="modal" onclick="closeModal()">
-  <span class="close">✕</span>
-  <div class="content" onclick="event.stopPropagation()">📸<div class="lbl" id="modalLbl">Фото</div></div>
-</div>
-
-<footer>
-  <span class="crown">♛</span> НОЧНОЙ КЛУБ «ИМПЕРИЯ» · ГОРНЫЙ АЛТАЙ · 2026<br>
-  Твоя Империя ждёт тебя этим летом
-</footer>
-
-<script>
-  // Подсветка активного пункта меню при прокрутке
-  const links = document.querySelectorAll('nav a');
-  const secs = document.querySelectorAll('section');
-
-  links.forEach(a => a.addEventListener('click', () => {
-    document.getElementById('nav').classList.remove('show');
-  }));
-
-  window.addEventListener('scroll', () => {
-    let cur = 'home';
-    secs.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 200) cur = s.id;
-    });
-    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
-  });
-
-  // Листалка афиш
-  function slide(dir) {
-    document.getElementById('posters').scrollBy({ left: dir * 346, behavior: 'smooth' });
-  }
-
-  // Модальное окно (заглушка)
-  function openModal(name) {
-    document.getElementById('modalLbl').textContent = name;
-    document.getElementById('modal').classList.add('open');
-  }
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-  }
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
-</script>
+      <footer class="site-footer shell">
+        <img src="./assets/imperia-logo.png" alt="Ночной клуб Империя">
+        <span>18+ · FC · DC</span>
+        <a href="https://www.imperia-tour.com" target="_blank" rel="noreferrer">imperia-tour.com</a>
+      </footer>
+    </section>
+  </main>
 </body>
 </html>
